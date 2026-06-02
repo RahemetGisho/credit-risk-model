@@ -153,6 +153,18 @@ The high level of completeness simplifies preprocessing and helps preserve infor
 
 Boxplots were used to identify unusual observations within numerical variables.
 
+## Code Quality Improvements
+
+To improve maintainability and support future extensions, reusable utility functions were introduced for:
+
+- Data loading
+- Dataset validation
+- Summary statistics generation
+- Missing value analysis
+- Visualization workflows
+
+Basic error handling was implemented to ensure robust dataset loading and validation before analysis. Unit tests were also added for key data-processing utilities.
+
 ### Key Findings
 
 - Several transaction-related variables contain notable outliers.
