@@ -62,6 +62,7 @@ def validate_dataset(df: pd.DataFrame):
         raise ValueError(
             f"Missing required columns: {missing}"
         )
+    
 
 
 # =========================
@@ -75,10 +76,12 @@ def calculate_rfm(df: pd.DataFrame) -> pd.DataFrame:
     """
 
     rfm_df = df.copy()
+    
 
     rfm_df["TransactionStartTime"] = pd.to_datetime(
         rfm_df["TransactionStartTime"]
     )
+    rfm_df["Amount"] = rfm_df["Amount"].abs()
 
     snapshot_date = (
         rfm_df["TransactionStartTime"].max()
