@@ -37,24 +37,30 @@ def load_data(filepath: str) -> pd.DataFrame:
 # Validation
 # =========================
 
-def validate_dataset(df: pd.DataFrame) -> bool:
+def validate_dataset(df: pd.DataFrame):
     """
     Validate dataset structure before processing.
+    Returns None if valid, raises error if invalid.
     """
 
     if df is None or df.empty:
         raise ValueError("Dataset is empty")
 
-    required_cols = ["CustomerId", "Amount", "TransactionStartTime"]
+    required_cols = [
+        "CustomerId",
+        "Amount",
+        "TransactionStartTime"
+    ]
 
-    missing = [c for c in required_cols if c not in df.columns]
+    missing = [
+        c for c in required_cols
+        if c not in df.columns
+    ]
 
     if missing:
-        raise ValueError(f"Missing required columns: {missing}")
-
-    return True
-
-
+        raise ValueError(
+            f"Missing required columns: {missing}"
+        )
 
 
 # =========================
