@@ -20,6 +20,3 @@ processed_df.to_csv(
 print("Processed dataset saved successfully.")
 
 
-print("Raw columns:", df.columns)
-print("Target column exists:", "is_high_risk" in df.columns)
-print(df[["CustomerId", "is_high_risk"]].head())
