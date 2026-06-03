@@ -6,21 +6,20 @@ from src.data_processing import (
     process_data
 )
 
-# Load raw data
-df = load_data("data/raw/data.csv")
+df = load_data(
+    "data/raw/data.csv"
+)
 
-# Run pipeline
-processed_data = process_data(df)
+processed_matrix, processed_df = process_data(df)
 
-# Convert to DataFrame
-processed_df = pd.DataFrame(processed_data)
-
-# Save output
 processed_df.to_csv(
     "data/processed/processed_data.csv",
     index=False
 )
 
-print("Processing complete!")
-print("Saved to data/processed/processed_data.csv")
-print(processed_df.shape)
+print("Processed dataset saved successfully.")
+
+
+print("Raw columns:", df.columns)
+print("Target column exists:", "is_high_risk" in df.columns)
+print(df[["CustomerId", "is_high_risk"]].head())
