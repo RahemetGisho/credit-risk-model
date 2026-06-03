@@ -302,61 +302,38 @@ This improves trust, transparency, and regulatory readiness.
 ---
 
 # Project Structure
-
 ```text
 credit-risk-model/
 
 ├── .github/
 │   └── workflows/
-│       └── ci.yml
-
-├── data/
-│   ├── raw/
-│   ├── processed/
-│   └── interim/
-
+│       └── ci.yml                # GitHub Actions CI pipeline
+│
+├── data/                         # Raw and processed datasets
+│
+├── mlruns/                       # MLflow experiment tracking
+│
 ├── notebooks/
-│   ├── 01_eda.ipynb
-│   ├── 02_feature_engineering.ipynb
-│   ├── 03_proxy_target.ipynb
-│   ├── 04_model_training.ipynb
-│   └── 05_model_explainability.ipynb
-
-├── reports/
-│   ├── figures/
-│   └── final_report.pdf
-
+│   ├── eda.ipynb                 # Exploratory Data Analysis
+│   └── .ipynb_checkpoints/
+│
 ├── src/
-│   ├── data/
-│   │   ├── load_data.py
-│   │   └── preprocessing.py
+│   ├── api/                      # FastAPI application
 │   │
-│   ├── features/
-│   │   ├── rfm.py
-│   │   └── feature_engineering.py
-│   │
-│   ├── models/
-│   │   ├── train.py
-│   │   ├── evaluate.py
-│   │   └── predict.py
-│   │
-│   ├── explainability/
-│   │   └── shap_analysis.py
-│   │
-│   └── api/
-│       ├── main.py
-│       └── schemas.py
+│   ├── __init__.py
+│   ├── data_processing.py        # Data cleaning and feature engineering
+│   ├── train.py                  # Model training pipeline
+│   ├── predict.py                # Prediction pipeline
+│   └── run_pipeline.py           # End-to-end workflow execution
 │
-├── tests/
-│   ├── test_features.py
-│   ├── test_models.py
-│   └── test_api.py
+├── tests/                        # Unit and integration tests
 │
-├── requirements.txt
+├── .gitignore
+├── docker-compose.yml            # Multi-container orchestration
+├── Dockerfile                    # Application containerization
 ├── README.md
-└── .gitignore
+└── requirements.txt
 ```
-
 ---
 
 # Code Quality Improvements
