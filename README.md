@@ -1,64 +1,79 @@
-# Credit Scoring Business Understanding
+# Credit Risk Probability Model for Alternative Data
 
-## 1. How does the Basel II Accord's emphasis on risk measurement influence the need for an interpretable and well-documented model?
+## Project Overview
 
-The Basel II Accord emphasizes accurate risk measurement, transparency, and regulatory compliance in credit risk management. Because credit scoring models influence lending decisions, banks must be able to explain how predictions are generated and justify those decisions to regulators and stakeholders.
+This project develops a credit risk scoring system using alternative transactional data to support Buy Now, Pay Later (BNPL) and other digital lending products. Since the dataset does not contain a direct default label, customer risk behavior is inferred using an RFM (Recency, Frequency, Monetary) based proxy target.
 
-An interpretable and well-documented model supports:
-
-- Transparency in credit decisions
-- Regulatory compliance and auditing
-- Effective risk monitoring and validation
-- Easier identification of model weaknesses and biases
-
-Therefore, model development should prioritize not only predictive performance but also explainability and proper documentation.
+The project follows a complete machine learning workflow, including business understanding, exploratory data analysis, feature engineering, proxy target creation, model development, model explainability, and deployment preparation.
 
 ---
 
-## 2. Without a direct "default" label, why is a proxy variable necessary, and what business risks does proxy-based prediction introduce?
+# Business Understanding
 
-The provided dataset contains customer transaction records but does not include a direct default label indicating whether a customer failed to repay credit. Since supervised machine learning requires a target variable, a proxy variable must be created.
+## 1. Basel II and Model Interpretability
 
-In this project, customer behavior can be analyzed using Recency, Frequency, and Monetary (RFM) metrics. Customers with low engagement and spending activity may be considered higher risk and used as a proxy for potential default behavior.
+The Basel II Accord emphasizes accurate risk measurement, transparency, and regulatory compliance in credit risk management. Credit scoring models directly influence lending decisions, making interpretability a critical requirement.
 
-However, proxy-based prediction introduces several risks:
+An interpretable and well-documented model enables:
 
-- The proxy may not accurately represent actual default behavior.
-- Good customers may be classified as high risk and vice versa.
-- Behavioral patterns do not always reflect repayment ability.
-- Business decisions may be affected by assumptions rather than true outcomes.
+* Transparent credit decisions
+* Regulatory compliance and auditing
+* Effective model validation and monitoring
+* Easier identification of bias and model weaknesses
+* Improved stakeholder trust
 
-These limitations should be clearly acknowledged when interpreting model results.
+Therefore, model development must balance predictive performance with explainability.
 
----
+## 2. Why a Proxy Target Is Necessary
 
-## 3. What are the key trade-offs between a simple, interpretable model (e.g., Logistic Regression with WoE) and a high-performance model (e.g., Gradient Boosting) in a regulated financial context?
+The dataset does not contain an explicit default indicator. Because supervised machine learning requires labeled outcomes, a proxy target must be created.
 
-### Logistic Regression with WoE
+Customer behavior is summarized using RFM metrics:
 
-**Advantages**
+* Recency: How recently a customer transacted
+* Frequency: How often a customer transacts
+* Monetary Value: Total spending activity
 
-- Highly interpretable and easy to explain
-- Widely accepted in financial institutions
-- Easier to validate and audit
+Customers exhibiting low engagement and spending behavior are treated as higher-risk segments and used as a proxy for potential default behavior.
 
-**Limitations**
+### Risks of Proxy-Based Prediction
 
-- May not capture complex relationships in data
-- Usually provides lower predictive performance
+* The proxy may not perfectly represent true default behavior.
+* Some low-activity customers may still be creditworthy.
+* High-activity customers may still default.
+* Business decisions may be influenced by assumptions rather than observed outcomes.
 
-### Gradient Boosting
+These limitations should be acknowledged when interpreting model outputs.
 
-**Advantages**
+## 3. Model Trade-Offs in a Regulated Environment
 
-- Strong predictive accuracy
-- Captures nonlinear relationships and feature interactions
+### Logistic Regression + WoE
 
-**Limitations**
+#### Advantages
 
-- Less transparent and harder to interpret
-- More difficult to explain to regulators
-- Requires additional explainability techniques
+* Highly interpretable
+* Easy to explain to regulators
+* Well-established in financial institutions
+* Simple validation and auditing process
+
+#### Limitations
+
+* May miss complex patterns
+* Lower predictive performance compared to advanced models
+
+### Gradient Boosting Models
+
+#### Advantages
+
+* Strong predictive performance
+* Captures nonlinear relationships
+* Handles feature interactions effectively
+
+#### Limitations
+
+* Less transparent
+* Requires additional explainability methods
+* More difficult to justify in regulated environments
 
 ---
 
@@ -66,121 +81,308 @@ These limitations should be clearly acknowledged when interpreting model results
 
 ## Objective
 
-The objective of this analysis is to explore the transaction dataset, assess data quality, identify behavioral patterns, and generate insights that will guide feature engineering and credit risk modeling.
+The goal of EDA is to understand customer transaction behavior, assess data quality, identify potential risk indicators, and guide downstream feature engineering.
+
+## Key Findings
+
+### Dataset Quality
+
+* Dataset is well-structured and suitable for modeling.
+* Strong overall completeness.
+* Minimal missing-value concerns.
+
+### Numerical Features
+
+* Transaction variables exhibit significant positive skewness.
+* Customer activity is concentrated among lower transaction ranges.
+* High-value transactions contribute substantial variance.
+* Several features contain meaningful outliers.
+
+### Categorical Features
+
+* Activity is concentrated within a small number of products and providers.
+* Some categories are infrequent and may require grouping.
+* Transaction channels demonstrate distinct behavioral patterns.
+
+### Correlation Analysis
+
+* Strong relationships exist among several transaction features.
+* No severe multicollinearity issues were identified.
+* Correlation analysis supports future feature selection decisions.
+
+### Outlier Analysis
+
+* Several variables contain extreme observations.
+* Outliers may represent high-value customers or unusual transaction behavior.
+* Outliers should be reviewed carefully before removal.
+
+### Top EDA Insights
+
+1. Data quality is strong and suitable for modeling.
+2. Customer activity is highly uneven.
+3. Fraudulent transactions are rare, creating class imbalance challenges.
+4. Customer behavior varies significantly across products and providers.
+5. Transaction behavior contains meaningful risk-related signals.
 
 ---
 
-## Dataset Overview
+# Task 3: Feature Engineering
 
-The dataset contains transaction-level information describing customer activity across different products, providers, and transaction channels.
+## Objective
 
-### Key Observations
+Transform raw transaction data into customer-level features suitable for credit risk modeling.
 
-- The dataset includes both numerical and categorical variables.
-- Features capture customer behavior, transaction characteristics, product usage, and temporal information.
-- A fraud indicator is available, although the primary focus of this project is credit risk modeling through a proxy target.
-- Initial inspection suggests that the dataset is well-structured and suitable for further analysis and feature engineering.
+## Engineered Features
 
----
+### RFM Features
 
-## Summary Statistics
+* Recency
+* Frequency
+* Monetary Value
 
-Summary statistics were used to understand the overall distribution and variability of numerical features.
+These features capture customer engagement and financial behavior.
 
-### Key Findings
+### Aggregation Features
 
-- Transaction-related variables show considerable variation, indicating diverse customer transaction behavior.
-- Several numerical features exhibit skewed distributions, suggesting that customer activity is not evenly distributed.
-- Extreme values are present in some variables and may require special consideration during preprocessing.
-- The fraud indicator is highly imbalanced, reflecting the rarity of fraudulent transactions in real-world financial systems.
+Customer transaction history was aggregated to generate:
 
----
+* Total transaction amount
+* Average transaction amount
+* Transaction count
+* Transaction amount standard deviation
+* Maximum transaction value
+* Minimum transaction value
 
-## Numerical Feature Analysis
+### Temporal Features
 
-The distribution of numerical variables was examined using histograms and density plots.
+Transaction timestamps were transformed into:
 
-### Key Findings
+* Transaction hour
+* Transaction day
+* Transaction month
+* Transaction weekday
 
-- Transaction-related features display noticeable positive skewness.
-- Most customer activity is concentrated within lower transaction ranges.
-- A relatively small proportion of transactions contribute substantially larger values.
-- The observed distributions suggest that transformation techniques may be beneficial during feature engineering.
+These features help capture behavioral patterns over time.
 
----
+### Categorical Encoding
 
-## Categorical Feature Analysis
+Categorical variables were encoded using:
 
-Categorical variables were analyzed to understand customer preferences and transaction patterns.
+* One-Hot Encoding
+* Label Encoding where appropriate
 
-### Key Findings
+### Scaling
 
-- Customer activity is concentrated within a limited number of categories.
-- Certain products, providers, and transaction channels dominate transaction activity.
-- Some categories appear infrequently and may require grouping during preprocessing.
-- Behavioral differences across categories may provide useful signals for credit risk assessment.
-
----
-
-## Correlation Analysis
-
-Correlation analysis was performed to examine relationships among numerical variables.
-
-### Key Findings
-
-- Several transaction-related features exhibit strong relationships, indicating overlapping information.
-- Other variables appear to provide unique information that may contribute predictive value.
-- No major multicollinearity concerns were observed among the primary numerical variables.
-- Correlation results will help guide feature selection and reduce redundancy in future models.
+Numerical variables were standardized to ensure consistent model behavior.
 
 ---
 
-## Missing Values Analysis
+# Task 4: Proxy Target Engineering
 
-Missing value analysis was conducted to evaluate data completeness.
+## Objective
 
-### Key Findings
+Create a proxy credit-risk label in the absence of actual default information.
 
-- The dataset demonstrates strong overall completeness.
-- No significant missing data issues were identified.
-- Extensive imputation procedures are not expected to be necessary.
+## Methodology
 
-The high level of completeness simplifies preprocessing and helps preserve information for modeling.
+### RFM Calculation
+
+For each customer:
+
+* Recency score calculated
+* Frequency score calculated
+* Monetary score calculated
+
+### Customer Segmentation
+
+K-Means clustering was applied to RFM features to identify behavioral groups.
+
+Clusters exhibiting:
+
+* Low frequency
+* Low monetary value
+* Long inactivity periods
+
+were classified as higher-risk customers.
+
+### Proxy Target Definition
+
+| Proxy Label | Description        |
+| ----------- | ------------------ |
+| 1           | High-Risk Customer |
+| 0           | Low-Risk Customer  |
+
+This proxy target serves as the dependent variable for supervised learning.
 
 ---
 
-## Outlier Detection
+# Task 5: Model Development and Evaluation
 
-Boxplots were used to identify unusual observations within numerical variables.
+## Models Trained
 
-## Code Quality Improvements
+### Logistic Regression
 
-To improve maintainability and support future extensions, reusable utility functions were introduced for:
+Chosen as a baseline due to:
 
-- Data loading
-- Dataset validation
-- Summary statistics generation
-- Missing value analysis
-- Visualization workflows
+* Simplicity
+* Interpretability
+* Regulatory acceptance
 
-Basic error handling was implemented to ensure robust dataset loading and validation before analysis. Unit tests were also added for key data-processing utilities.
+### Random Forest
 
-### Key Findings
+Used to capture nonlinear patterns and feature interactions.
 
-- Several transaction-related variables contain notable outliers.
-- Extreme observations may represent high-value customers, unusual transaction patterns, or other meaningful business events.
-- Outliers should be evaluated carefully before removal because they may contain valuable risk-related information.
+### Gradient Boosting
+
+Evaluated for maximum predictive performance.
 
 ---
 
-## Top Insights from EDA
+## Evaluation Metrics
 
-1. The dataset demonstrates strong overall data quality and provides a reliable foundation for credit risk modeling.
+Models were assessed using:
 
-2. Customer transaction behavior is highly uneven, with activity concentrated among a relatively small portion of transactions.
+* Accuracy
+* Precision
+* Recall
+* F1 Score
+* ROC-AUC
 
-3. Several numerical features contain meaningful outliers that may capture important behavioral or risk-related signals.
+### Validation Strategy
 
-4. Fraudulent transactions are relatively rare, indicating a class imbalance challenge that should be considered during model development.
+* Train/Test Split
+* Cross-Validation
+* Hyperparameter Tuning
 
-5. Customer activity is concentrated within specific products, providers, and transaction channels, suggesting the presence of behavioral patterns that may be useful for predicting credit risk.
+---
+
+## Model Selection
+
+Model comparison was performed using ROC-AUC as the primary evaluation metric.
+
+Selection criteria included:
+
+* Predictive performance
+* Stability
+* Explainability
+* Regulatory suitability
+
+The final selected model balances business requirements and predictive power.
+
+---
+
+# Task 6: Model Explainability
+
+## Importance of Explainability
+
+Credit decisions require transparency and fairness. Model explainability helps stakeholders understand why customers are classified as low or high risk.
+
+## Feature Importance
+
+Feature importance analysis was conducted to identify the strongest predictors of customer risk behavior.
+
+Typical influential features included:
+
+* Recency
+* Frequency
+* Monetary Value
+* Average transaction amount
+* Transaction count
+
+## SHAP Analysis
+
+SHAP (SHapley Additive Explanations) was used to provide:
+
+* Global model interpretation
+* Local prediction explanations
+* Feature contribution analysis
+
+This improves trust, transparency, and regulatory readiness.
+
+---
+
+# Project Structure
+
+```text
+credit-risk-model/
+
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+
+├── data/
+│   ├── raw/
+│   ├── processed/
+│   └── interim/
+
+├── notebooks/
+│   ├── 01_eda.ipynb
+│   ├── 02_feature_engineering.ipynb
+│   ├── 03_proxy_target.ipynb
+│   ├── 04_model_training.ipynb
+│   └── 05_model_explainability.ipynb
+
+├── reports/
+│   ├── figures/
+│   └── final_report.pdf
+
+├── src/
+│   ├── data/
+│   │   ├── load_data.py
+│   │   └── preprocessing.py
+│   │
+│   ├── features/
+│   │   ├── rfm.py
+│   │   └── feature_engineering.py
+│   │
+│   ├── models/
+│   │   ├── train.py
+│   │   ├── evaluate.py
+│   │   └── predict.py
+│   │
+│   ├── explainability/
+│   │   └── shap_analysis.py
+│   │
+│   └── api/
+│       ├── main.py
+│       └── schemas.py
+│
+├── tests/
+│   ├── test_features.py
+│   ├── test_models.py
+│   └── test_api.py
+│
+├── requirements.txt
+├── README.md
+└── .gitignore
+```
+
+---
+
+# Code Quality Improvements
+
+To improve maintainability and scalability:
+
+* Modular project structure implemented
+* Reusable utility functions developed
+* Unit tests added for critical functionality
+* Automated validation checks introduced
+* CI/CD pipeline configured through GitHub Actions
+* Error handling added to preprocessing workflows
+
+---
+
+# Future Improvements
+
+* Incorporate real default labels when available
+* Explore advanced ensemble methods
+* Implement model monitoring pipelines
+* Introduce fairness and bias testing
+* Deploy model using Docker and cloud infrastructure
+* Integrate continuous retraining workflows
+
+---
+
+# Conclusion
+
+This project demonstrates a complete end-to-end credit risk modeling workflow using alternative transactional data. Through proxy target engineering, customer behavioral analysis, machine learning, and explainability techniques, the solution provides a foundation for transparent and scalable credit risk assessment suitable for modern digital lending environments.
